@@ -1,20 +1,12 @@
 pub fn parse_miles(inp: &str) -> Vec<u32> {
     inp
-        .chars()
-        .filter_map(|a| a.to_digit(10))
+        .split(",")
+        .filter_map(|s| s.trim().parse().ok())
         .collect()
 }
 
-pub fn progress_days(inp: &Vec<u32>) -> u32 {
-    let mut progress_days: u32 = 0;
-
-    for i in 0..inp.len()-1{
-        if &inp[i] < &inp[i+1] {
-            progress_days += 1;
-        }
-    }
-
-    progress_days
+pub fn progress_days(inp: &[u32]) -> usize {
+    inp.windows(2).filter(|w| w[0] < w[1]).count()
 }
 
 #[cfg(test)]
@@ -44,5 +36,24 @@ mod tests {
     #[test]
     fn one_progress() {
         assert_eq!(1, progress_days(&parse_miles("1, 2, 1")));
+    }
+
+    #[test]
+    fn readme_examples() {
+        assert_eq!(2, progress_days(&[3, 4, 1, 2]));
+        assert_eq!(3, progress_days(&[10, 11, 12, 9, 10]));
+        assert_eq!(1, progress_days(&[6, 5, 4, 3, 2, 9]));
+        assert_eq!(0, progress_days(&[9, 9]));
+    }
+
+    #[test]
+    fn multi_digit() {
+        assert_eq!(vec![9, 10], parse_miles("9, 10"));
+    }
+
+    #[test]
+    fn empty() {
+        assert_eq!(0, progress_days(&[]));
+        assert_eq!(0, progress_days(&[5]));
     }
 }
